@@ -58,7 +58,7 @@ interface Contender {
 
 const supportDirectory = dirname(fileURLToPath(import.meta.url));
 const workerPath = resolve(supportDirectory, "store-race-worker.ts");
-const workspaceRoot = resolve(supportDirectory, "../../../..");
+const packageRoot = resolve(supportDirectory, "../..");
 const childTemporaryDirectory =
   process.platform === "win32" ? tmpdir() : "/tmp";
 
@@ -71,7 +71,7 @@ function startContender(operation: RaceOperation): Contender {
     command,
     ["--silent", "exec", "tsx", workerPath, encoded],
     {
-      cwd: workspaceRoot,
+      cwd: packageRoot,
       env: {
         ...process.env,
         TMPDIR: childTemporaryDirectory,
@@ -189,7 +189,7 @@ export function startStaleMessageOperation(
     command,
     ["--silent", "exec", "tsx", workerPath, encoded],
     {
-      cwd: workspaceRoot,
+      cwd: packageRoot,
       env: {
         ...process.env,
         TMPDIR: childTemporaryDirectory,
