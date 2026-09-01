@@ -310,6 +310,42 @@ describe("single-owner remote coordination state", () => {
     store.close();
   });
 
+  it("orders owner inbox messages deterministically when timestamps match", () => {
+    const store = new CoordinationStore();
+    const device = enroll(store).credential;
+    const snapshot = remoteWorkspace(
+      "agentconduit.owner-message-order",
+      `wt_${"8".repeat(32)}`,
+    );
+    const remote = store.upsertRemoteWorkspace(
+      device.deviceToken,
+      snapshot,
+      "owner-message-order-worktree",
+    );
+    const agent = store.registerAgent({
+      runtime: "codex",
+      sessionRef: "owner-message-order-agent",
+      workspace: remote.workspace,
+    });
+    const timestamp = "2026-09-02T00:00:00.000Z";
+    const laterId = `opm_${"f".repeat(32)}`;
+    const earlierId = `opm_${"0".repeat(32)}`;
+    const insert = store.db.prepare(
+      `INSERT INTO operator_messages
+        (message_id, recipient_agent_id, body, created_at)
+       VALUES (?, ?, ?, ?)`,
+    );
+    insert.run(laterId, agent.agentId, "inserted first", timestamp);
+    insert.run(earlierId, agent.agentId, "inserted second", timestamp);
+
+    expect(
+      store
+        .operatorInbox(agent.agentId, agent.sessionToken)
+        .map((message) => message.messageId),
+    ).toEqual([earlierId, laterId]);
+    store.close();
+  });
+
   it("provides monotonic durable event cursors without reusing pruned cursors", () => {
     const store = new CoordinationStore();
     const first = store.recordAuditEvent("hub.started", "hub", {

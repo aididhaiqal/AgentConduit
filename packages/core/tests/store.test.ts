@@ -330,6 +330,49 @@ describe("CoordinationStore", () => {
     store.close();
   });
 
+  it("orders peer inbox messages deterministically when timestamps match", () => {
+    const store = new CoordinationStore();
+    const sender = store.registerAgent({
+      runtime: "claude",
+      sessionRef: "same-time-sender",
+      workspace: workspace("repo_same_time", "wt_same_time_sender"),
+    });
+    const recipient = store.registerAgent({
+      runtime: "codex",
+      sessionRef: "same-time-recipient",
+      workspace: workspace("repo_same_time", "wt_same_time_recipient"),
+    });
+    const timestamp = "2026-09-02T00:00:00.000Z";
+    const laterId = `msg_${"f".repeat(32)}`;
+    const earlierId = `msg_${"0".repeat(32)}`;
+    const insert = store.db.prepare(
+      `INSERT INTO messages
+        (message_id, sender_agent_id, recipient_agent_id, body, created_at)
+       VALUES (?, ?, ?, ?, ?)`,
+    );
+    insert.run(
+      laterId,
+      sender.agentId,
+      recipient.agentId,
+      "inserted first",
+      timestamp,
+    );
+    insert.run(
+      earlierId,
+      sender.agentId,
+      recipient.agentId,
+      "inserted second",
+      timestamp,
+    );
+
+    expect(
+      store
+        .inbox(recipient.agentId, recipient.sessionToken)
+        .map((message) => message.messageId),
+    ).toEqual([earlierId, laterId]);
+    store.close();
+  });
+
   it("binds integration operations to the requesting agent's repository", () => {
     const store = new CoordinationStore();
     const local = store.registerAgent({

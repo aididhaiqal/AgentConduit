@@ -3843,12 +3843,12 @@ export class CoordinationStore {
         includeAcknowledged
           ? this.db
               .prepare(
-                "SELECT * FROM messages WHERE recipient_agent_id = ? ORDER BY created_at",
+                "SELECT * FROM messages WHERE recipient_agent_id = ? ORDER BY created_at, message_id",
               )
               .all(agentId)
           : this.db
               .prepare(
-                "SELECT * FROM messages WHERE recipient_agent_id = ? AND acknowledged_at IS NULL ORDER BY created_at",
+                "SELECT * FROM messages WHERE recipient_agent_id = ? AND acknowledged_at IS NULL ORDER BY created_at, message_id",
               )
               .all(agentId)
       ) as MessageRow[];
@@ -3938,14 +3938,14 @@ export class CoordinationStore {
       includeAcknowledged
         ? this.db
             .prepare(
-              "SELECT * FROM operator_messages WHERE recipient_agent_id = ? ORDER BY created_at",
+              "SELECT * FROM operator_messages WHERE recipient_agent_id = ? ORDER BY created_at, message_id",
             )
             .all(agentId)
         : this.db
             .prepare(
               `SELECT * FROM operator_messages
                WHERE recipient_agent_id = ? AND acknowledged_at IS NULL
-               ORDER BY created_at`,
+               ORDER BY created_at, message_id`,
             )
             .all(agentId)
     ) as OperatorMessageRow[];

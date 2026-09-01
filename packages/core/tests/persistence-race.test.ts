@@ -124,13 +124,23 @@ describe("CoordinationStore durability", () => {
           correlationId: "handoff-1",
         }),
       ]);
-      expect(store.inbox(codex.agentId, codex.sessionToken, true)).toEqual([
-        expect.objectContaining({
-          messageId: acknowledged.messageId,
-          acknowledgedAt: expect.any(String),
-        }),
-        expect.objectContaining({ messageId: pending.messageId }),
-      ]);
+      const allMessages = store.inbox(codex.agentId, codex.sessionToken, true);
+      expect(allMessages.map((message) => message.messageId)).toEqual(
+        [acknowledged, pending]
+          .sort(
+            (left, right) =>
+              left.createdAt.localeCompare(right.createdAt) ||
+              left.messageId.localeCompare(right.messageId),
+          )
+          .map((message) => message.messageId),
+      );
+      expect(
+        allMessages.find(
+          (message) => message.messageId === acknowledged.messageId,
+        ),
+      ).toEqual(
+        expect.objectContaining({ acknowledgedAt: expect.any(String) }),
+      );
       expect(store.getIntegration(request.requestId)).toMatchObject({
         status: "claimed",
         claimedBy: claude.agentId,
