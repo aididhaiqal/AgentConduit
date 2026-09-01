@@ -1,0 +1,50 @@
+{
+  "name": "@agentconduit/bridge",
+  "version": "0.1.0",
+  "description": "Provider-neutral runtime supervisor for AgentConduit MCP",
+  "keywords": [
+    "coding-agents",
+    "coordination",
+    "mcp",
+    "runtime-supervisor",
+    "worktrees"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "agentconduit-bridge": "./dist/main.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.20.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "tsc -p tsconfig.json --clean",
+    "test": "vitest run",
+    "type:check": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@agentconduit/core": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.30.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  }
+}

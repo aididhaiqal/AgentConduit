@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "profile": "production",
+  "databasePath": "/home/you/.local/state/agentconduit/coordination.db",
+  "tokenFile": "/home/you/.config/agentconduit/token",
+  "allowedRoots": ["/home/you/code"],
+  "host": "127.0.0.1",
+  "port": 8787,
+  "heartbeatTimeoutMs": 90000,
+  "http": {
+    "bodyLimitBytes": 262144,
+    "maxConcurrentRequests": 16,
+    "maxConnections": 64,
+    "rateLimitWindowMs": 60000,
+    "rateLimitMaxRequests": 600,
+    "requestTimeoutMs": 30000,
+    "shutdownTimeoutMs": 15000
+  }
+}

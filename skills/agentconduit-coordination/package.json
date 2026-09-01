@@ -1,0 +1,19 @@
+{
+  "name": "@agentconduit/coordination-skill",
+  "version": "0.1.0",
+  "description": "Provider-neutral Agent Skills guidance for coordinating coding agents through AgentConduit",
+  "keywords": [
+    "agent-skills",
+    "coding-agents",
+    "claude-code",
+    "codex",
+    "mcp"
+  ],
+  "files": [
+    "SKILL.md",
+    "references"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

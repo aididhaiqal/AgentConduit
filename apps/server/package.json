@@ -1,0 +1,55 @@
+{
+  "name": "@agentconduit/server",
+  "version": "0.1.0",
+  "description": "MCP transports for the AgentConduit coordination broker",
+  "keywords": [
+    "mcp",
+    "coding-agents",
+    "coordination",
+    "git",
+    "worktrees"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "agentconduit-mcp": "./dist/main.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22.20.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "tsc -p tsconfig.json --clean",
+    "dev": "tsx src/main.ts",
+    "start": "node dist/main.js",
+    "test": "pnpm --filter @agentconduit/core build && pnpm build && vitest run",
+    "type:check": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@agentconduit/core": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "express": "^5.2.1",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.0",
+    "tsx": "^4.20.6",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  }
+}

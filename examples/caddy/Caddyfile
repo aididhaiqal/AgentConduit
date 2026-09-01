@@ -1,0 +1,9 @@
+# Replace this hostname before use. Caddy obtains and renews its certificate;
+# AgentConduit Hub remains bound to numeric loopback on the same host.
+conduit.example.net {
+	reverse_proxy 127.0.0.1:8790 {
+		# Overwrite, rather than trust, any client-supplied forwarding chain.
+		# The Hub accepts this single address only from its loopback proxy hop.
+		header_up X-Forwarded-For {remote_host}
+	}
+}

@@ -1,0 +1,55 @@
+{
+  "name": "@agentconduit/node",
+  "version": "0.1.0",
+  "description": "Authenticated outbound local workspace Node for AgentConduit Hub",
+  "keywords": [
+    "coding-agents",
+    "coordination",
+    "git",
+    "mcp",
+    "multi-pc"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "agentconduit-node": "./dist/main.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.20.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "tsc -p tsconfig.json --clean",
+    "dev": "tsx src/main.ts",
+    "start": "node dist/main.js",
+    "test": "pnpm --filter @agentconduit/core build && pnpm --filter @agentconduit/server build && pnpm --filter @agentconduit/hub build && pnpm build && vitest run",
+    "type:check": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@agentconduit/core": "workspace:*",
+    "@agentconduit/server": "workspace:*"
+  },
+  "devDependencies": {
+    "@agentconduit/hub": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@types/node": "^24.0.0",
+    "tsx": "^4.20.6",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  }
+}

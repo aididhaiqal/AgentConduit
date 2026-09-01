@@ -1,0 +1,22 @@
+[Unit]
+Description=AgentConduit single-owner multi-PC Hub
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/absolute/path/to/agentconduit-hub serve --config %h/.config/agentconduit-hub/config.json
+Restart=on-failure
+RestartSec=3s
+TimeoutStopSec=25s
+UMask=0077
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=%h/.local/state/agentconduit-hub
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=default.target

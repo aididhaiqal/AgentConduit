@@ -1,0 +1,29 @@
+{
+  "name": "agentconduit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Provider-neutral coordination for coding agents and Git workspaces",
+  "type": "module",
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": ">=22.20.0"
+  },
+  "scripts": {
+    "build": "pnpm --recursive build",
+    "ci:check": "node scripts/check-ci.mjs",
+    "clean": "pnpm --recursive clean",
+    "dev": "pnpm --filter @agentconduit/server dev",
+    "format:check": "prettier --check .",
+    "pack:check": "pnpm build && node scripts/check-packages.mjs",
+    "skill:check": "node scripts/check-skill.mjs skills/agentconduit-coordination",
+    "test": "node --test scripts/check-ci.test.mjs poc/native-claude-collaborator-probe.test.mjs && pnpm --recursive test",
+    "type:check": "tsc -b --pretty false"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "prettier": "^3.6.2",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11",
+    "yaml": "^2.8.1"
+  }
+}

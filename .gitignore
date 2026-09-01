@@ -1,0 +1,16 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+.agentconduit/coordination.db
+.agentconduit/coordination.db-*
+.agentconduit/*.sqlite
+.agentconduit/*.sqlite-*
+.agentconduit/bridge/
+*.db
+*.db-shm
+*.db-wal
+.DS_Store

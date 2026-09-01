@@ -1,0 +1,12 @@
+# Project-scoped example: copy this table into .codex/config.toml in a trusted
+# repository. Start one AgentConduit HTTP broker before starting Codex, and
+# export the same AGENTCONDUIT_TOKEN into both processes. This config supplies
+# HTTP transport auth only; the client receives its per-agent sessionToken from
+# agent.register and passes it in subsequent tool calls.
+
+[mcp_servers.agentconduit]
+url = "http://127.0.0.1:8787/mcp"
+bearer_token_env_var = "AGENTCONDUIT_TOKEN"
+required = true
+startup_timeout_sec = 10
+tool_timeout_sec = 60

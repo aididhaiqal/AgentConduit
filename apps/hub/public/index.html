@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#10283a" />
+    <title>AgentConduit signal box</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#view-content">Skip to operations</a>
+    <div id="announcement" class="sr-only" aria-live="polite"></div>
+
+    <section id="login-view" class="login-view" aria-labelledby="login-title">
+      <div class="login-panel">
+        <div class="login-mark" aria-hidden="true">
+          <span>AC</span><span>01</span>
+        </div>
+        <p class="eyebrow">Owner access · Signal box 01</p>
+        <h1 id="login-title">Take the controls.</h1>
+        <p class="login-copy">
+          Sign in with the owner token stored on this Hub. The token is used for
+          this exchange only; your browser keeps an HttpOnly session afterward.
+        </p>
+        <form id="login-form" class="stack-form">
+          <label for="owner-token">Owner token</label>
+          <input
+            id="owner-token"
+            name="token"
+            type="password"
+            inputmode="text"
+            autocomplete="current-password"
+            required
+            minlength="32"
+            spellcheck="false"
+          />
+          <button class="button button-primary" type="submit">
+            Open signal box
+          </button>
+          <p id="login-error" class="form-error" role="alert" hidden></p>
+        </form>
+        <p class="security-note">
+          AgentConduit never asks for provider credentials, shell access, or a
+          local filesystem path here.
+        </p>
+      </div>
+      <div class="login-rail" aria-hidden="true">
+        <span></span><i></i><span></span><i></i><span></span>
+      </div>
+    </section>
+
+    <div id="app-shell" class="app-shell" hidden>
+      <aside class="signal-box" aria-label="AgentConduit navigation">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true">
+            <span>AC</span><span>01</span>
+          </div>
+          <div>
+            <p>AgentConduit</p>
+            <span>Owner signal box</span>
+          </div>
+        </div>
+
+        <nav class="section-nav" aria-label="Operations views">
+          <button type="button" data-view="overview" aria-current="page">
+            <span class="nav-signal" aria-hidden="true"></span>
+            Overview
+          </button>
+          <button type="button" data-view="devices">
+            <span class="nav-signal" aria-hidden="true"></span>
+            Devices
+          </button>
+          <button type="button" data-view="agents">
+            <span class="nav-signal" aria-hidden="true"></span>
+            Agents &amp; workspaces
+          </button>
+          <button type="button" data-view="jobs">
+            <span class="nav-signal" aria-hidden="true"></span>
+            Jobs &amp; progress
+          </button>
+          <button type="button" data-view="integrations">
+            <span class="nav-signal" aria-hidden="true"></span>
+            Integrations
+          </button>
+          <button type="button" data-view="messages">
+            <span class="nav-signal" aria-hidden="true"></span>
+            Messages
+          </button>
+          <button type="button" data-view="reconciliation">
+            <span class="nav-signal" aria-hidden="true"></span>
+            Reconciliation
+          </button>
+          <button type="button" data-view="audit">
+            <span class="nav-signal" aria-hidden="true"></span>
+            Audit
+          </button>
+        </nav>
+
+        <div class="signal-box-footer">
+          <div class="connection-readout">
+            <span
+              id="connection-lamp"
+              class="connection-lamp"
+              aria-hidden="true"
+            ></span>
+            <div>
+              <span id="connection-label">Connecting</span>
+              <small id="sync-label">No snapshot yet</small>
+            </div>
+          </div>
+          <button id="logout-button" class="text-button" type="button">
+            End owner session
+          </button>
+        </div>
+      </aside>
+
+      <main class="operations-main">
+        <header class="operations-header">
+          <div>
+            <p id="view-kicker" class="eyebrow">Network authority</p>
+            <h1 id="view-title">Overview</h1>
+          </div>
+          <button id="refresh-button" class="button button-quiet" type="button">
+            Refresh state
+          </button>
+        </header>
+
+        <section class="route-board" aria-labelledby="route-board-title">
+          <div class="route-board-heading">
+            <div>
+              <p class="board-code">LIVE ROUTE BOARD / AC-NET</p>
+              <h2 id="route-board-title">Authority across your machines</h2>
+            </div>
+            <p id="route-board-summary">Waiting for the Hub snapshot…</p>
+          </div>
+          <div
+            id="network-board"
+            class="network-board"
+            aria-live="polite"
+          ></div>
+        </section>
+
+        <div id="notice" class="notice" role="status" hidden></div>
+        <section
+          id="view-content"
+          class="view-content"
+          tabindex="-1"
+          aria-busy="true"
+        >
+          <div class="loading-state">
+            <span class="loading-signal" aria-hidden="true"></span>
+            Reading coordinated state…
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog
+      id="confirm-dialog"
+      class="confirm-dialog"
+      aria-labelledby="confirm-title"
+    >
+      <form method="dialog">
+        <p class="eyebrow">Authority check</p>
+        <h2 id="confirm-title">Confirm action</h2>
+        <p id="confirm-copy"></p>
+        <div class="dialog-actions">
+          <button class="button button-quiet" value="cancel">Keep state</button>
+          <button
+            id="confirm-button"
+            class="button button-danger"
+            value="confirm"
+          >
+            Confirm
+          </button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>
