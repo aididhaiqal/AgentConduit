@@ -1,15 +1,52 @@
+<div align="center">
+
 # AgentConduit
 
 **A durable coordination plane for independent coding agents sharing Git
 work.**
 
 [![CI](https://github.com/aididhaiqal/AgentConduit/actions/workflows/ci.yml/badge.svg)](https://github.com/aididhaiqal/AgentConduit/actions/workflows/ci.yml)
+[![MCP protocol](https://img.shields.io/badge/protocol-MCP-44d7c5?style=flat-square)](docs/protocol.md)
+[![Node.js 22.20+](https://img.shields.io/badge/Node.js-22.20%2B-58b9ff?style=flat-square)](docs/getting-started.md)
+[![SQLite durability](https://img.shields.io/badge/state-durable%20SQLite-f6b85f?style=flat-square)](docs/operations.md)
+[![Topology](https://img.shields.io/badge/topology-local%20%2B%20multi--PC-ff7a6e?style=flat-square)](docs/multi-pc-operations.md)
+
+</div>
+
+<p align="center">
+  <img
+    src="docs/assets/agentconduit-hero.svg"
+    alt="Two independent coding agents coordinate through AgentConduit's durable FIFO queue, fenced lease, and ledger before one integrates with a shared Git target ref."
+    width="100%"
+  />
+</p>
 
 AgentConduit gives Codex, Claude Code, and other MCP-capable runtimes one
 provider-neutral place to discover each other, exchange durable messages,
 report safe progress, and serialize work that must not race.
 
 It is not another agent runtime. It is the meeting point between runtimes.
+
+<table>
+  <tr>
+    <td align="center" width="25%">
+      <strong>Discover</strong><br />
+      <sub>Fresh peers in the same Git repository scope</sub>
+    </td>
+    <td align="center" width="25%">
+      <strong>Communicate</strong><br />
+      <sub>Durable messages, acknowledgements, and handoffs</sub>
+    </td>
+    <td align="center" width="25%">
+      <strong>Observe</strong><br />
+      <sub>Jobs, checkpoints, liveness, and terminal outcomes</sub>
+    </td>
+    <td align="center" width="25%">
+      <strong>Integrate</strong><br />
+      <sub>FIFO target queues with renewable fenced leases</sub>
+    </td>
+  </tr>
+</table>
 
 ## Why this exists
 
@@ -66,26 +103,44 @@ required review, or a remote merge queue.
 
 ## Architecture
 
-AgentConduit supports two deliberately separate trust profiles:
+AgentConduit supports two deliberately separate trust profiles. Local clients
+never need a remote control plane; multi-PC clients still expose only a
+loopback MCP boundary on each trusted machine.
 
 ```mermaid
-flowchart TB
-    subgraph Local["One workstation"]
-        LA["Claude · Codex · other MCP agents"]
-        LB["Loopback AgentConduit broker"]
-        LS[("Protected SQLite")]
+flowchart LR
+    P{"Trust profile"}
+
+    subgraph Local["LOCAL · ONE WORKSTATION"]
+        LA["Codex · Claude Code · MCP clients"]
+        LB["Loopback broker"]
+        LS[("Private SQLite")]
         LA -->|"MCP"| LB
-        LB --> LS
+        LB <-->|"durable state"| LS
     end
 
-    subgraph Multi["One owner · multiple trusted PCs"]
-        A1["Agents on PC 1"] -->|"loopback MCP"| N1["Outbound Node"]
-        A2["Agents on PC 2"] -->|"loopback MCP"| N2["Outbound Node"]
+    subgraph Multi["MULTI-PC · ONE OWNER"]
+        A1["PC 1 agents"] -->|"loopback MCP"| N1["Outbound Node"]
+        A2["PC 2 agents"] -->|"loopback MCP"| N2["Outbound Node"]
         N1 -->|"authenticated HTTPS"| H["Single-owner Hub"]
         N2 -->|"authenticated HTTPS"| H
-        H --> HS[("Protected SQLite")]
+        H <-->|"durable state"| HS[("Private SQLite")]
         H --> UI["Authenticated dashboard"]
     end
+
+    P -->|"one workstation"| LA
+    P -->|"multiple trusted PCs"| A1
+    P --> A2
+
+    classDef agent fill:#102a3d,stroke:#58b9ff,color:#eaf6ff,stroke-width:2px;
+    classDef service fill:#123244,stroke:#44d7c5,color:#eaf6ff,stroke-width:2px;
+    classDef store fill:#382d24,stroke:#f6b85f,color:#fff4df,stroke-width:2px;
+    classDef view fill:#33252b,stroke:#ff7a6e,color:#fff0ed,stroke-width:2px;
+    class LA,A1,A2 agent;
+    class LB,N1,N2,H service;
+    class LS,HS store;
+    class UI view;
+    class P store;
 ```
 
 On one workstation, every client talks to the same loopback broker and SQLite
@@ -95,6 +150,46 @@ connections to the Hub.
 
 The Hub never opens a shell on a Node, never receives a workstation's absolute
 path, and never executes Git.
+
+## A merge race becomes an ordered handoff
+
+Two agents may finish together. They do not need to guess who is faster, rely
+on a chat window staying open, or treat a process heartbeat as merge authority.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant A as Agent A · worktree/a
+    participant C as AgentConduit
+    participant B as Agent B · worktree/b
+    participant G as Git · refs/heads/main
+
+    A->>C: register(discovered worktree A)
+    B->>C: register(discovered worktree B)
+    par Both approach the same target ref
+        A->>C: integration.enqueue(main)
+    and
+        B->>C: integration.enqueue(main)
+    end
+    C-->>A: status = queued
+    C-->>B: status = queued
+    Note over A,B: Durable FIFO order: A precedes B for this target ref
+    A->>C: integration.claim()
+    C-->>A: fenced target-ref lease
+    B->>C: integration.claim()
+    C-->>B: wait — earlier request owns authority
+    A->>G: re-read refs and integrate
+    A->>C: complete(postTargetOid)
+    B->>C: claim()
+    C-->>B: target moved → needs_refresh
+    B->>C: refresh(), then claim()
+    C-->>B: fresh fenced lease
+```
+
+AgentConduit authorizes the coordination transition; the claimant still runs
+Git and reports the broker-visible post-operation target OID. A raw Git command
+can bypass this advisory plane, so repositories that need hard enforcement
+should also use protected branches, required review, or a remote merge queue.
 
 ## Designed for coordination, not surveillance
 
@@ -118,12 +213,71 @@ Job events contain short operator-facing summaries and normalized state. A
 progress. A stale job remains inspectable and resumable; staleness never
 auto-completes, cancels, replaces, or grants cleanup authority.
 
+```mermaid
+flowchart LR
+    subgraph N["NON-TERMINAL JOB"]
+        direction LR
+        Q["queued"] -->|"work · checkpoint · operation"| R["running"]
+        Q -->|"waiting_for_input"| W["waiting"]
+        R -->|"waiting_for_input"| W
+        W -->|"work · checkpoint · operation"| R
+    end
+
+    C["job.create"] --> Q
+    Q -->|"explicit terminal event"| O{"outcome"}
+    R -->|"explicit terminal event"| O
+    W -->|"explicit terminal event"| O
+    O -->|"completed"| S["succeeded"]
+    O -->|"failed"| F["failed"]
+    O -->|"cancelled"| X["cancelled"]
+
+    H["heartbeat<br/>liveness only · status unchanged"] -.->|"applies throughout"| R
+    A["active ↔ stale<br/>derived from recent activity · never terminal"] -.-> W
+
+    classDef source fill:#102a3d,stroke:#58b9ff,color:#eaf6ff,stroke-width:2px;
+    classDef live fill:#123244,stroke:#44d7c5,color:#eaf6ff,stroke-width:2px;
+    classDef decision fill:#382d24,stroke:#f6b85f,color:#fff4df,stroke-width:2px;
+    classDef terminal fill:#33252b,stroke:#ff7a6e,color:#fff0ed,stroke-width:2px;
+    classDef note fill:#172332,stroke:#718da3,color:#d7edf7,stroke-dasharray:5 4;
+    class C source;
+    class Q,R,W live;
+    class O decision;
+    class S,F,X terminal;
+    class H,A note;
+```
+
+| Observation                           | Safe conclusion                                                             |
+| ------------------------------------- | --------------------------------------------------------------------------- |
+| A recent `heartbeat`                  | The owner recently observed liveness                                        |
+| A `checkpoint`                        | Useful bounded progress was recorded                                        |
+| Derived activity becomes `stale`      | No recent activity was observed; inspect before acting                      |
+| `succeeded`, `failed`, or `cancelled` | An explicit terminal event closed the lifecycle; no later event is accepted |
+
 ## Why durable reads and replay matter
 
 Native push is excellent for responsiveness, but it is version-sensitive and
 can be lost during disconnects. AgentConduit therefore uses a simple rule:
 
 > Push wakes the client. Durable resource reads tell the truth.
+
+```mermaid
+flowchart LR
+    W["Accepted state change"] --> D[("Durable resource state<br/>+ replayable event streams")]
+    D -->|"best-effort signal"| P[["SSE or native push hint"]]
+    P -.->|"wake"| R["Client re-reads"]
+    U["Reconnect · timeout<br/>uncertain response"] --> R
+    R -->|"resource read + relevant event replay"| D
+    D --> T["Authoritative current state"]
+
+    classDef source fill:#102a3d,stroke:#58b9ff,color:#eaf6ff,stroke-width:2px;
+    classDef durable fill:#382d24,stroke:#f6b85f,color:#fff4df,stroke-width:2px;
+    classDef hint fill:#33252b,stroke:#ff7a6e,color:#fff0ed,stroke-width:2px;
+    classDef truth fill:#123244,stroke:#44d7c5,color:#eaf6ff,stroke-width:2px;
+    class W,U,R source;
+    class D durable;
+    class P hint;
+    class T truth;
+```
 
 Messages, jobs, progress events, leases, integrations, and audit records live in
 SQLite. After a reconnect or uncertain response, clients re-read the

@@ -11,10 +11,14 @@ pushes to a public external repository.
 **Acceptance:** The root README explains the real coordination problem,
 provider-neutral design, local and multi-PC topology, safety boundaries,
 job-event model, current maturity, and a verified quick start without claiming
-unproven deployment or package publication. The owner-selected license and
-canonical repository metadata agree across all publishable artifacts. The
-public `aididhaiqal/AgentConduit` repository contains the exact reviewed local
-`main` commit, renders the README, and reports a green source-publication check.
+unproven deployment or package publication. It opens with a source-controlled
+hero, a restrained evidence-backed badge row, and Mermaid diagrams that make
+the topology, FIFO integration handoff, and job lifecycle understandable at a
+glance, including why push wakes clients while durable reads remain
+authoritative. The owner-selected license and canonical repository metadata
+agree across all publishable artifacts. The public
+`aididhaiqal/AgentConduit` repository contains the exact reviewed local `main`
+commit, renders the README, and reports a green source-publication check.
 
 ### Outcome 1: Public product narrative
 
@@ -24,12 +28,16 @@ public `aididhaiqal/AgentConduit` repository contains the exact reviewed local
   and durable coordination model, distinguishes liveness from progress and
   completion, presents supported topologies and packages, and links readers to
   accurate setup, operations, protocol, security, and distribution guidance.
+  Give that narrative a source-controlled vector hero, truthful badge row,
+  compact capability strip, and Mermaid views of deployment topology, ordered
+  integration authority, job/event semantics, and push hints versus durable
+  recovery.
 - **Risks/open questions:** Keep the core narrative universal rather than
   Atlas-, Claude-, or Codex-specific. Do not describe local tests as an operator
   deployment, raw Git advisory coordination as hard enforcement, or unshipped
   npm packages as installable releases.
-- **Verify:** `pnpm format:check` and a bounded link/claim inspection against the
-  governing docs.
+- **Verify:** `pnpm format:check`, SVG structure and dimensions, Mermaid block
+  structure, and a bounded link/claim inspection against the governing docs.
 
 ### Outcome 2: Public release identity
 
