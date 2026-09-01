@@ -11,6 +11,11 @@ AgentConduit has six independently packable artifacts:
 | `@agentconduit/node`               | Outbound device agent and local MCP endpoint                     | Each trusted owner PC                                 |
 | `@agentconduit/coordination-skill` | Provider-neutral `SKILL.md` and recovery guidance                | Codex, Claude Code, and other Agent Skills clients    |
 
+The source and every package manifest use the
+[MIT License](../LICENSE). Repository, homepage, and issue-tracker metadata
+point to the canonical `aididhaiqal/AgentConduit` source repository. This
+release identity does not imply that any npm artifact has been published.
+
 The server executable is the broker launcher. The optional bridge executable
 is a headless lifecycle supervisor; coordination remains an MCP tool surface,
 and provider-specific runtime behavior remains an explicitly supplied adapter
@@ -140,12 +145,12 @@ bootstrap reference could not already have executed.
 ## Public-release gates
 
 Packing is local and does not publish anything. Publishing is an explicit
-external mutation and must be authorized separately. Before a public release:
+external mutation and must be authorized separately. Before a public package
+release:
 
-1. choose and add the project's license, then declare that same license in all
-   publishable package manifests;
-2. create or select the canonical repository and add accurate `repository`,
-   `homepage`, and issue-tracker metadata instead of guessing a URL;
+1. keep the canonical MIT text and all publishable package manifests aligned;
+2. confirm the canonical repository and its `repository`, `homepage`, and
+   issue-tracker metadata still identify the intended release source;
 3. confirm ownership of the `@agentconduit` package scope;
 4. run the retained tests plus `pnpm pack:check` from the exact release commit;
 5. review the immutable CI action revisions; enable externally enforced action

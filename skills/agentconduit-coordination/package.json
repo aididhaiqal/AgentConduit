@@ -9,6 +9,16 @@
     "codex",
     "mcp"
   ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aididhaiqal/AgentConduit.git",
+    "directory": "skills/agentconduit-coordination"
+  },
+  "homepage": "https://github.com/aididhaiqal/AgentConduit#readme",
+  "bugs": {
+    "url": "https://github.com/aididhaiqal/AgentConduit/issues"
+  },
   "files": [
     "SKILL.md",
     "references"

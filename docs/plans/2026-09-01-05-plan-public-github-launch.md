@@ -41,15 +41,14 @@ commit, renders the README, and reports a green source-publication check.
 
 ### Outcome 2: Public release identity
 
-- **Work:** After the owner selects a license, add its canonical text and make
-  the root and six publishable package manifests agree on the license,
+- **Work:** The owner selected MIT on 2026-09-02. Add its canonical text and
+  make the root and six publishable package manifests agree on the license,
   repository, homepage, and issue-tracker metadata. Set an accurate GitHub
   description and bounded discovery topics; do not publish npm artifacts or
   create a release.
-- **Risks/open questions:** Apache-2.0 is recommended for its explicit patent
-  grant; MIT is the simpler permissive alternative. No license may be inserted
-  or implied without the owner's choice. Repository ownership, signing, npm
-  scope ownership, provenance, and package publication remain distinct gates.
+- **Risks/open questions:** The MIT choice does not establish repository or npm
+  scope ownership, signing, provenance, or package publication; those remain
+  distinct gates.
 - **Verify:** `pnpm type:check`, `pnpm test`, `pnpm build`, `pnpm ci:check`,
   `pnpm format:check`, `pnpm skill:check`, `pnpm pack:check`, and
   `pnpm audit --audit-level=high` from the exact release candidate.
@@ -75,8 +74,8 @@ commit, renders the README, and reports a green source-publication check.
   public README is prepared. This does not authorize npm publication, a GitHub
   Release, service installation, deployment, personal agent configuration, or
   a live provider/quota run.
-- The public push is blocked until the owner selects the license. README and
-  launch preparation may proceed without inventing or implying one.
+- The owner selected MIT for this source release. Changing that license remains
+  an owner decision and is outside this launch execution.
 - Completion keeps source-implemented, locally verified, committed, pushed,
   published as source, packaged, npm-published, deployed, and operator-runtime
   verified as separate evidence states.

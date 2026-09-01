@@ -6,6 +6,7 @@
 work.**
 
 [![CI](https://github.com/aididhaiqal/AgentConduit/actions/workflows/ci.yml/badge.svg)](https://github.com/aididhaiqal/AgentConduit/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-44d7c5?style=flat-square)](LICENSE)
 [![MCP protocol](https://img.shields.io/badge/protocol-MCP-44d7c5?style=flat-square)](docs/protocol.md)
 [![Node.js 22.20+](https://img.shields.io/badge/Node.js-22.20%2B-58b9ff?style=flat-square)](docs/getting-started.md)
 [![SQLite durability](https://img.shields.io/badge/state-durable%20SQLite-f6b85f?style=flat-square)](docs/operations.md)
@@ -446,6 +447,10 @@ publication, deployment, and runtime evidence.
 | [Multi-PC operations](docs/multi-pc-operations.md) | Hub TLS, enrollment, Nodes, dashboard, backup/restore, and fail-closed recovery       |
 | [Distribution](docs/distribution.md)               | Package contents, source installation, and public-release gates                       |
 | [Security](docs/security.md)                       | Trust profiles, credential handling, Git boundaries, and residual risks               |
+
+## License
+
+AgentConduit is open source under the [MIT License](LICENSE).
 
 ## The idea in one line
 

@@ -15,6 +15,14 @@ import { fileURLToPath } from "node:url";
 
 const pnpm = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const canonicalLicense = readFileSync(join(repositoryRoot, "LICENSE"), "utf8");
+const releaseIdentity = {
+  license: "MIT",
+  repositoryType: "git",
+  repositoryUrl: "git+https://github.com/aididhaiqal/AgentConduit.git",
+  homepage: "https://github.com/aididhaiqal/AgentConduit#readme",
+  bugsUrl: "https://github.com/aididhaiqal/AgentConduit/issues",
+};
 const packages = [
   { name: "@agentconduit/core", directory: "packages/core" },
   { name: "@agentconduit/server", directory: "apps/server" },
@@ -26,6 +34,50 @@ const packages = [
     directory: "skills/agentconduit-coordination",
   },
 ];
+
+function readManifest(directory) {
+  return JSON.parse(
+    readFileSync(join(repositoryRoot, directory, "package.json"), "utf8"),
+  );
+}
+
+function assertReleaseIdentity(manifest, directory) {
+  const repository = manifest.repository;
+  if (manifest.license !== releaseIdentity.license) {
+    throw new Error(`${directory}/package.json must declare license MIT`);
+  }
+  if (
+    typeof repository !== "object" ||
+    repository === null ||
+    repository.type !== releaseIdentity.repositoryType ||
+    repository.url !== releaseIdentity.repositoryUrl
+  ) {
+    throw new Error(
+      `${directory}/package.json must declare the canonical Git repository`,
+    );
+  }
+  if (directory === ".") {
+    if (repository.directory !== undefined) {
+      throw new Error(
+        "the root package repository metadata must not declare a subdirectory",
+      );
+    }
+  } else if (repository.directory !== directory) {
+    throw new Error(
+      `${directory}/package.json must declare repository.directory as ${directory}`,
+    );
+  }
+  if (manifest.homepage !== releaseIdentity.homepage) {
+    throw new Error(
+      `${directory}/package.json must declare the canonical homepage`,
+    );
+  }
+  if (manifest.bugs?.url !== releaseIdentity.bugsUrl) {
+    throw new Error(
+      `${directory}/package.json must declare the canonical issue tracker`,
+    );
+  }
+}
 
 function run(command, arguments_, options = {}) {
   const result = spawnSync(command, arguments_, {
@@ -49,6 +101,10 @@ const root = mkdtempSync(join(tmpdir(), "agentconduit-pack-check-"));
 const tarballs = join(root, "tarballs");
 const installation = join(root, "installation");
 try {
+  assertReleaseIdentity(readManifest("."), ".");
+  for (const package_ of packages) {
+    assertReleaseIdentity(readManifest(package_.directory), package_.directory);
+  }
   mkdirSync(tarballs);
   mkdirSync(installation);
   for (const package_ of packages) {
@@ -69,12 +125,7 @@ try {
 
   const dependencies = {};
   for (const package_ of packages) {
-    const manifest = JSON.parse(
-      readFileSync(
-        join(repositoryRoot, package_.directory, "package.json"),
-        "utf8",
-      ),
-    );
+    const manifest = readManifest(package_.directory);
     const expectedName = `${package_.name.replace("@", "").replace("/", "-")}-${manifest.version}.tgz`;
     const archive = archives.find((path) => path.endsWith(expectedName));
     if (!archive) throw new Error(`packed archive is missing: ${expectedName}`);
@@ -154,6 +205,25 @@ try {
     ],
     { cwd: installation, capture: true },
   );
+
+  for (const package_ of packages) {
+    const [scope, name] = package_.name.split("/");
+    const packedLicense = join(
+      installation,
+      "node_modules",
+      scope,
+      name,
+      "LICENSE",
+    );
+    if (
+      !existsSync(packedLicense) ||
+      readFileSync(packedLicense, "utf8") !== canonicalLicense
+    ) {
+      throw new Error(
+        `${package_.name} must include the canonical repository LICENSE`,
+      );
+    }
+  }
 
   const skillRoot = join(
     installation,

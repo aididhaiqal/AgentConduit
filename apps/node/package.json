@@ -9,6 +9,16 @@
     "mcp",
     "multi-pc"
   ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aididhaiqal/AgentConduit.git",
+    "directory": "apps/node"
+  },
+  "homepage": "https://github.com/aididhaiqal/AgentConduit#readme",
+  "bugs": {
+    "url": "https://github.com/aididhaiqal/AgentConduit/issues"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

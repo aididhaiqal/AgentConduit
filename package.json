@@ -3,6 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "description": "Provider-neutral coordination for coding agents and Git workspaces",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aididhaiqal/AgentConduit.git"
+  },
+  "homepage": "https://github.com/aididhaiqal/AgentConduit#readme",
+  "bugs": {
+    "url": "https://github.com/aididhaiqal/AgentConduit/issues"
+  },
   "type": "module",
   "packageManager": "pnpm@11.7.0",
   "engines": {
