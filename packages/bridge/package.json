@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@agentconduit/core": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.30.0"
+    "@modelcontextprotocol/sdk": "^1.32.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
